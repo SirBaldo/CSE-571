@@ -13,7 +13,7 @@ except ImportError:
     torch_available = False
 
 class Field:
-    # NUM_MARKERS = 6
+    # NUM_MARKERS = 6q
     NUM_MARKERS = 8
 
     MAP_FACTOR = 1

@@ -1,0 +1,105 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+motion_factors = [0.1, 0.3, 1.0]
+obs_factors = [0.1, 0.3, 1.0]
+
+# Mean Trajectory Error (rows = motion, cols = observation)
+mean_traj = np.array([
+    [5.28, 7.97, 10.67],
+    [5.96, 7.93, 13.26],
+    [9.36, 11.22, 17.54]
+])
+
+std_traj = np.array([
+    [3.40, 5.50, 8.64],
+    [3.36, 5.07, 8.88],
+    [6.62, 9.48, 13.94]
+])
+
+mean_map = np.array([
+    [6.53, 9.81, 12.56],
+    [7.34, 9.39, 15.29],
+    [11.70, 14.52, 21.70]
+])
+
+std_map = np.array([
+    [4.44, 6.97, 11.00],
+    [4.32, 6.43, 11.02],
+    [7.74, 12.32, 18.08]
+])
+
+########################################
+# HEATMAPS
+########################################
+fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+
+data_list = [mean_traj, std_traj, mean_map, std_map]
+titles = ['Mean Trajectory Error', 'Std Trajectory Error',
+          'Mean Map Error', 'Std Map Error']
+
+for ax, data, title in zip(axes.flatten(), data_list, titles):
+    im = ax.imshow(data, cmap='YlOrRd', aspect='auto')
+    ax.set_xticks(range(3))
+    ax.set_xticklabels(obs_factors)
+    ax.set_yticks(range(3))
+    ax.set_yticklabels(motion_factors)
+    ax.set_xlabel('Observation Factor')
+    ax.set_ylabel('Motion Factor')
+    ax.set_title(title)
+    for i in range(3):
+        for j in range(3):
+            ax.text(j, i, f'{data[i, j]:.2f}', ha='center', va='center',
+                    color='black', fontsize=11, fontweight='bold')
+    fig.colorbar(im, ax=ax, shrink=0.8)
+
+plt.tight_layout()
+plt.savefig('ekf_slam_part_c_heatmap.png', dpi=150, bbox_inches='tight')
+plt.show()
+
+########################################
+# LINE PLOTS
+########################################
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(12, 10))
+
+# Mean Trajectory Error
+for i, mf in enumerate(motion_factors):
+    ax1.errorbar(obs_factors, mean_traj[i], yerr=std_traj[i],
+                 marker='o', capsize=5, linewidth=2, label=f'motion={mf}')
+ax1.set_xlabel('Observation Factor')
+ax1.set_ylabel('Mean Position Error')
+ax1.set_title('Mean Trajectory Error')
+ax1.legend()
+ax1.grid(True, alpha=0.3)
+
+# Std Trajectory Error
+for i, mf in enumerate(motion_factors):
+    ax2.plot(obs_factors, std_traj[i], marker='o', linewidth=2, label=f'motion={mf}')
+ax2.set_xlabel('Observation Factor')
+ax2.set_ylabel('Std Position Error')
+ax2.set_title('Std Trajectory Error')
+ax2.legend()
+ax2.grid(True, alpha=0.3)
+
+# Mean Map Error
+for i, mf in enumerate(motion_factors):
+    ax3.errorbar(obs_factors, mean_map[i], yerr=std_map[i],
+                 marker='s', capsize=5, linewidth=2, label=f'motion={mf}')
+ax3.set_xlabel('Observation Factor')
+ax3.set_ylabel('Mean Marker Error')
+ax3.set_title('Mean Map Error')
+ax3.legend()
+ax3.grid(True, alpha=0.3)
+
+# Std Map Error
+for i, mf in enumerate(motion_factors):
+    ax4.plot(obs_factors, std_map[i], marker='s', linewidth=2, label=f'motion={mf}')
+ax4.set_xlabel('Observation Factor')
+ax4.set_ylabel('Std Marker Error')
+ax4.set_title('Std Map Error')
+ax4.legend()
+ax4.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('ekf_slam_part_c_lines.png', dpi=150, bbox_inches='tight')
+plt.show()
